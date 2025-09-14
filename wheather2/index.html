@@ -1,0 +1,76 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Weather App</title>
+    
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="container text-center">
+      <h1 class="mt-4 display-6 fw-bold text-white">Weather JS</h1>
+      <p class="fst-italic text-white fw-bold">Your direct line to sky</p>
+      
+      <div class="weather-container mx-auto shadow col-md-8 p-4 rounded">
+        <!-- Search -->
+        <div class="input-group mb-3">
+          <input type="text" id="input-box" class="form-control" placeholder="Enter the city name" autocomplete="off" aria-label="Enter city name">
+          <button id="button" type="button" class="btn btn-outline-secondary" aria-label="Search weather"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div> 
+        
+        <!-- Error Message -->
+        <div id="error-message" class="alert alert-danger d-none" role="alert">
+          City not found, please enter a valid city
+        </div>    
+
+        <!-- Weather Body (hidden by default) -->
+        <div class="weather-body d-none" id="weather-body">
+          <div class="mb-3">
+            <h4 id="city">--</h4>
+            <p id="date">--</p>
+          </div>
+          <div>
+            <h3 id="temp">-- °C</h3>
+            <p id="min-max">--</p>
+            <p id="weather">--</p>
+          </div>
+          <div class="row text-center">
+            <div class="col-md-4">
+              <div class="card info-card">
+                <div class="card-body">
+                  <img src="image/icone-humidity.png" alt="Humidity icon">
+                  <p class="mt-2" id="humidity">-- %</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card info-card">
+                <div class="card-body">
+                  <img src="image/icone-wind.png" alt="Wind speed icon">
+                  <p class="mt-2" id="wind">-- km/h</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card info-card">
+                <div class="card-body">
+                  <img src="image/gage.png" alt="Air pressure icon">
+                  <p class="mt-2" id="pressure">-- hPa</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+   <script src="app.js"></script>
+  </body>
+</html>
