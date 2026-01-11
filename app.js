@@ -3,7 +3,7 @@ const weatherApi = {
   url: "https://api.openweathermap.org/data/2.5/weather"
 };
 
-// Elements
+// ================= ELEMENTS =================
 const txtInput = document.getElementById("input-box");
 const btnWeather = document.getElementById("button");
 
@@ -18,14 +18,41 @@ const pPressure = document.getElementById("pressure");
 
 const divWeatherBody = document.getElementById("weather-body");
 const divErrorMessage = document.getElementById("error-message");
+const loader = document.getElementById("loader");
 
 // ================= SEARCH BY CITY =================
 async function getWeatherReport(city) {
   try {
+    loader.classList.remove("d-none");
+    divWeatherBody.classList.add("d-none");
+    divErrorMessage.classList.add("d-none");
+
     const response = await fetch(
       `${weatherApi.url}?q=${city}&appid=${weatherApi.key}&units=metric`
     );
+
     if (!response.ok) throw new Error("City not found");
+
+    const data = await response.json();
+    showWeatherReport(data);
+
+    divWeatherBody.classList.remove("d-none");
+  } catch (error) {
+    divWeatherBody.classList.add("d-none");
+    divErrorMessage.classList.remove("d-none");
+  } finally {
+    loader.classList.add("d-none");
+  }
+}
+
+// ================= LOCATION WEATHER =================
+async function getWeatherByLocation(lat, lon) {
+  try {
+    loader.classList.remove("d-none");
+
+    const response = await fetch(
+      `${weatherApi.url}?lat=${lat}&lon=${lon}&appid=${weatherApi.key}&units=metric`
+    );
 
     const data = await response.json();
     showWeatherReport(data);
@@ -33,26 +60,17 @@ async function getWeatherReport(city) {
     divWeatherBody.classList.remove("d-none");
     divErrorMessage.classList.add("d-none");
   } catch {
-    divWeatherBody.classList.add("d-none");
-    divErrorMessage.classList.remove("d-none");
+    getWeatherReport("Bhopal"); // safety fallback
+  } finally {
+    loader.classList.add("d-none");
   }
-}
-
-// ================= LOCATION WEATHER =================
-async function getWeatherByLocation(lat, lon) {
-  const response = await fetch(
-    `${weatherApi.url}?lat=${lat}&lon=${lon}&appid=${weatherApi.key}&units=metric`
-  );
-  const data = await response.json();
-  showWeatherReport(data);
-  divWeatherBody.classList.remove("d-none");
 }
 
 // ================= DISPLAY =================
 function showWeatherReport(weather) {
   hcity.innerText = `${weather.name}, ${weather.sys.country}`;
   pdate.innerText = new Date().toDateString();
-  htemp.innerText = `${weather.main.temp} °C`;
+  htemp.innerText = `${Math.round(weather.main.temp)} °C`;
   pMinMax.innerText = `Min: ${weather.main.temp_min}°C | Max: ${weather.main.temp_max}°C`;
   pWeather.innerText = weather.weather[0].main;
   pHumidity.innerText = `${weather.main.humidity}%`;
@@ -72,24 +90,37 @@ function updateBackground(type) {
     Thunderstorm: "image/thunderstorm.jpeg",
     Haze: "image/haze.png"
   };
-  document.body.style.backgroundImage = `url(${bg[type] || "image/sunback.jpg"})`;
+
+  document.body.style.backgroundImage =
+    `url(${bg[type] || "image/sunback.jpg"})`;
 }
 
 // ================= EVENTS =================
 btnWeather.addEventListener("click", () => {
-  if (txtInput.value.trim()) getWeatherReport(txtInput.value.trim());
+  if (txtInput.value.trim()) {
+    getWeatherReport(txtInput.value.trim());
+    txtInput.value = "";
+  }
 });
 
 txtInput.addEventListener("keypress", (e) => {
   if (e.key === "Enter") btnWeather.click();
 });
 
-// ================= AUTO LOCATION ON LOAD =================
+// ================= AUTO LOAD =================
 window.onload = () => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      pos => getWeatherByLocation(pos.coords.latitude, pos.coords.longitude),
-      () => console.log("Location denied")
+      pos => getWeatherByLocation(
+        pos.coords.latitude,
+        pos.coords.longitude
+      ),
+      () => {
+        // ❌ location deny → default city
+        getWeatherReport("Bhopal");
+      }
     );
+  } else {
+    getWeatherReport("Bhopal");
   }
 };
